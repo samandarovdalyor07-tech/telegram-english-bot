@@ -1,0 +1,24 @@
+# systemd service — Linux VPS'da botni 24/7 ishlatish uchun.
+# USER va yo'llarni o'zingiznikiga moslang, so'ng:
+#   sudo cp english-bot.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now english-bot
+#   sudo systemctl status english-bot      # holatini ko'rish
+#   journalctl -u english-bot -f           # loglarni kuzatish
+
+[Unit]
+Description=English Learning Telegram Bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/telegram-english-bot
+EnvironmentFile=/home/ubuntu/telegram-english-bot/.env
+ExecStart=/home/ubuntu/telegram-english-bot/venv/bin/python bot.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
