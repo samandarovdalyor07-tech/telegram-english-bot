@@ -56,3 +56,30 @@ async def ask_tutor(level: str, history: list, user_message: str) -> str:
         messages=messages,
     )
     return (response.choices[0].message.content or "").strip() or "…"
+
+
+async def grade_answer(task: str, answer: str):
+    """O'quvchi javobini vazifaga qarab baholaydi. (ball 0-100, izoh) qaytaradi."""
+    client = _get_client()
+    prompt = (
+        "You are a fair but strict English teacher grading a student's answer.\n"
+        f"Task: {task}\n"
+        f"Student's answer: {answer}\n\n"
+        "Reply on ONE line EXACTLY as: SCORE|feedback\n"
+        "SCORE is an integer 0-100. feedback is one short sentence in Uzbek "
+        "(say what was good or what to fix)."
+    )
+    response = await client.chat.completions.create(
+        model=AI_MODEL,
+        max_tokens=120,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    text = (response.choices[0].message.content or "").strip()
+    try:
+        score_part, _, fb = text.partition("|")
+        digits = "".join(ch for ch in score_part if ch.isdigit())
+        score = max(0, min(100, int(digits)))
+        feedback = fb.strip() or "—"
+    except Exception:
+        score, feedback = 50, (text[:150] or "—")
+    return score, feedback

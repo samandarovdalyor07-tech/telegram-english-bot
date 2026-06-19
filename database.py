@@ -55,6 +55,35 @@ def init_db():
     _add_column(conn, "users", "cert_percent", "INTEGER NOT NULL DEFAULT 0")
     _add_column(conn, "users", "banned", "INTEGER NOT NULL DEFAULT 0")
     _add_column(conn, "users", "teacher", "INTEGER NOT NULL DEFAULT 0")
+
+    # O'qituvchi vazifalari va o'quvchi javoblari
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS assignments (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            group_id    INTEGER,
+            teacher_id  INTEGER,
+            task        TEXT,
+            message_id  INTEGER,
+            active      INTEGER NOT NULL DEFAULT 1,
+            created     TEXT
+        )
+        """
+    )
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS submissions (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            assignment_id INTEGER,
+            student_id    INTEGER,
+            student_name  TEXT,
+            answer        TEXT,
+            score         INTEGER,
+            created       TEXT,
+            UNIQUE(assignment_id, student_id)
+        )
+        """
+    )
     conn.commit()
 
 
@@ -266,3 +295,49 @@ def is_teacher(user_id: int) -> bool:
     conn = _connect()
     row = conn.execute("SELECT teacher FROM users WHERE user_id = ?", (user_id,)).fetchone()
     return bool(row and row["teacher"])
+
+
+# --------------------------------------------------------------------------- #
+# Vazifalar (o'qituvchi nazorati)
+# --------------------------------------------------------------------------- #
+
+def create_assignment(group_id: int, teacher_id: int, task: str, message_id: int) -> int:
+    """Guruh uchun yangi vazifa yaratadi (eskisini nofaol qiladi)."""
+    conn = _connect()
+    conn.execute("UPDATE assignments SET active = 0 WHERE group_id = ? AND active = 1", (group_id,))
+    cur = conn.execute(
+        "INSERT INTO assignments (group_id, teacher_id, task, message_id, active, created) "
+        "VALUES (?, ?, ?, ?, 1, ?)",
+        (group_id, teacher_id, task, message_id, date.today().isoformat()),
+    )
+    conn.commit()
+    return cur.lastrowid
+
+
+def get_active_assignment(group_id: int):
+    conn = _connect()
+    return conn.execute(
+        "SELECT * FROM assignments WHERE group_id = ? AND active = 1 ORDER BY id DESC LIMIT 1",
+        (group_id,),
+    ).fetchone()
+
+
+def add_submission(assignment_id: int, student_id: int, name: str, answer: str, score):
+    """O'quvchi javobini saqlaydi (qayta yuborsa, yangilaydi). score None bo'lishi mumkin."""
+    conn = _connect()
+    conn.execute(
+        "INSERT OR REPLACE INTO submissions "
+        "(assignment_id, student_id, student_name, answer, score, created) "
+        "VALUES (?, ?, ?, ?, ?, ?)",
+        (assignment_id, student_id, name, answer, score, date.today().isoformat()),
+    )
+    conn.commit()
+
+
+def get_submissions(assignment_id: int):
+    conn = _connect()
+    return conn.execute(
+        "SELECT student_name, score, answer FROM submissions "
+        "WHERE assignment_id = ? ORDER BY (score IS NULL), score DESC",
+        (assignment_id,),
+    ).fetchall()

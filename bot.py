@@ -80,6 +80,7 @@ from handlers.wordclash import (
     on_pick,
     on_answer,
 )
+from handlers.teacher import assign_command, report_command, on_submission
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -124,6 +125,10 @@ def build_application(token: str) -> Application:
     app.add_handler(CommandHandler("wordclash", wordclash_command))
     app.add_handler(CommandHandler("group", group_command))
 
+    # 👨‍🏫 O'qituvchi (guruh nazorati)
+    app.add_handler(CommandHandler("assign", assign_command))
+    app.add_handler(CommandHandler("report", report_command))
+
     # 🛡 Admin
     app.add_handler(CommandHandler("myid", myid_command))
     app.add_handler(CommandHandler("stats", stats_command))
@@ -167,8 +172,13 @@ def build_application(token: str) -> Application:
     app.add_handler(CallbackQueryHandler(on_pick, pattern=r"^wc:pick:"))
     app.add_handler(CallbackQueryHandler(on_answer, pattern=r"^wc:ans:"))
 
-    # Matnli xabarlar (oxirida — menyu tugmalari, AI, yozish)
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_text))
+    # 👨‍🏫 Guruhda vazifaga reply qilingan javoblar
+    app.add_handler(MessageHandler(filters.ChatType.GROUPS & filters.REPLY, on_submission))
+
+    # Matnli xabarlar (faqat lichkada — menyu tugmalari, AI, yozish)
+    app.add_handler(MessageHandler(
+        filters.TEXT & ~filters.COMMAND & filters.ChatType.PRIVATE, on_text
+    ))
     return app
 
 
