@@ -89,5 +89,6 @@ REPLY_BUTTONS = {
     "📜 Sertifikat": "certificate",
     "🤖 AI Tutor": "ai",
     "💎 Coin": "buy",
+    "⚔️ Word Clash": "wordclash",
     "🏠 Bosh menyu": "menu",
 }

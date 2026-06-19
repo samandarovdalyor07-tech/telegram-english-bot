@@ -16,6 +16,7 @@ from handlers.vocabulary import start_vocab
 from handlers.certificate import certificate_command
 from handlers.ai import ai_start, ai_message
 from handlers.payment import buy_command
+from handlers.wordclash import group_command
 
 
 WELCOME = (
@@ -191,6 +192,8 @@ async def on_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await ai_start(update, context)
         elif target == "buy":
             await buy_command(update, context)
+        elif target == "wordclash":
+            await group_command(update, context)
         else:
             name = ACTIVITIES.get(target, target)
             await update.message.reply_text(
