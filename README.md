@@ -1,86 +1,99 @@
-# 🎓 English Learning Bot (v2.0)
+# 🎓 English Learning Bot
 
-Ingliz tilini o'rganish uchun ko'p bo'limli Telegram bot. Menyu tugmalari
-orqali bo'lim va darajangizni tanlaysiz, hammasi **o'zbekcha tushuntirish**
-bilan beriladi.
+Ingliz tilini o'rganish uchun ko'p funksiyali Telegram bot. O'yin elementlari,
+AI tutor, to'lov, sertifikat, o'qituvchi paneli va guruh o'yini bilan — hammasi
+**o'zbekcha tushuntirish** bilan.
 
-## ✨ Bo'limlar
+> ✅ **Serverda 24/7 ishlaydi** (Hetzner VPS, systemd) · GitHub'da to'liq saqlangan.
 
+---
+
+## ✨ Imkoniyatlar
+
+### 📚 O'quv bo'limlari (daraja bo'yicha, A1–C1)
 | Bo'lim | Tavsifi |
 |--------|---------|
-| 📝 **Test** | Daraja bo'yicha A/B/C/D test, oxirida foiz va **5 balli baho** |
-| 📖 **Matn (Reading)** | Darajaga mos ingliz matni + **o'zbekcha tarjimasi** |
-| ✍️ **Yozish (Writing)** | O'zbekcha gapni inglizchaga yozasiz, **bot tekshiradi** (kichik xatolarga ham moslashadi) |
-| 📚 **Lug'at (Vocabulary)** | Yangi so'zlar — tarjima va misol gap bilan **flashcard** uslubida yodlash |
+| 📝 **Test** | A/B/C/D test, oxirida foiz va **5 balli baho** |
+| 📖 **Matn (Reading)** | Ingliz matni + **o'zbekcha tarjima** |
+| ✍️ **Yozish (Writing)** | O'zbekchadan inglizchaga yozasiz, bot tekshiradi |
+| 📚 **Lug'at (Vocabulary)** | Yangi so'zlar — tarjima va misol bilan |
 
-- 5 ta daraja: **Beginner (A1), Elementary (A2), Intermediate (B1),
-  Upper-Intermediate (B2), Advanced (C1)**
-- Savollar, matnlar, so'zlar va mashqlar har safar aralashtiriladi
-- Har bir javobdan keyin darhol fikr-mulohaza (✅ / 🟡 / ❌)
-- Istalgan paytda **🏠 Bosh menyu** tugmasi bilan qaytish
+### 🏆 Geymifikatsiya (SQLite)
+- **XP**, **coin**, **streak** (ketma-ket kunlar), **reyting** (leaderboard), **profil**
+- 👥 **Referral** — do'st taklif qilsa bonus (`/profile` da havola)
+
+### 🤖 AI Tutor
+- Foydalanuvchi yozadi → **GPT (OpenAI)** o'qituvchi sifatida tekshiradi, tushuntiradi
+- Coin bilan cheklangan
+
+### 📜 Sertifikat
+- Test ≥70% → chiroyli **PNG sertifikat** (ism, daraja, ball, sana)
+
+### 💎 To'lov — Telegram Stars (⭐)
+- Coin sotib olish va o'qituvchilik — **avtomatik**, kartasiz
+
+### 🛡 Admin paneli
+- `/stats` (statistika) · `/broadcast` (e'lon) · `/give` (coin sovg'a) · `/ban` `/unban` · `/maketeacher`
+
+### 🎓 O'qituvchi + guruh nazorati
+- O'qituvchilik: Stars bilan avtomatik yoki admin bepul beradi
+- Guruhda `/assign` — vazifa beradi → o'quvchilar javob yozadi → **AI baholaydi** → `/report` hisobot
+
+### ⚔️ Word Clash (guruh o'yini)
+- Guruhda komandali o'yin: kapitanlar jamoa tuzadi, **3 raund** (🇬🇧→🇺🇿, 🇺🇿→🇬🇧, aralash), A/B/C/D, g'olib aniqlanadi
+
+---
+
+## 📋 Buyruqlar
+
+**Foydalanuvchi:** `/start` `/menu` `/profile` `/leaderboard` `/certificate` `/ai` `/buy` `/teacher` `/help`
+**Guruh:** `/group` `/wordclash` `/assign` `/report`
+**Admin:** `/stats` `/broadcast` `/give` `/ban` `/unban` `/maketeacher` `/removeteacher`
+
+---
 
 ## 🚀 O'rnatish
 
 ```bash
-# 1. Kerakli kutubxonani o'rnatish
-pip install -r requirements.txt
-
-# 2. Token sozlash: .env.example dan nusxa olib, .env deb saqlang
-#    va ichiga BotFather tokeningizni yozing (Windows PowerShell):
-copy .env.example .env
-
-# 3. Botni ishga tushirish
+pip install -r requirements.txt       # kutubxonalar
+copy .env.example .env                # so'ng .env ga token va kalitlarni yozing
 python bot.py
 ```
 
-## 🔑 Token qayerdan olinadi?
+`.env` faylida:
+```
+BOT_TOKEN=...          # @BotFather token (majburiy)
+AI_API_KEY=...         # OpenAI kalit (AI tutor uchun)
+ADMIN_IDS=123,456      # adminlar ID (vergul bilan)
+```
 
-1. Telegramda [@BotFather](https://t.me/BotFather) ni oching
-2. `/newbot` buyrug'ini yuboring → bot nomi va username'ini bering
-3. Berilgan tokenni `.env` fayldagi `BOT_TOKEN=` ga qo'ying
+## ☁️ Serverda 24/7 (deploy)
+To'liq qo'llanma: [DEPLOY.md](DEPLOY.md). Qisqacha (VPS):
+```bash
+git clone https://github.com/samandarovdalyor07-tech/telegram-english-bot.git
+cd telegram-english-bot
+python3 -m venv venv && ./venv/bin/pip install -r requirements.txt
+# .env yarating, so'ng systemd xizmati (english-bot.service)
+```
+Yangilash: `git pull && systemctl restart english-bot`
 
-## 💬 Buyruqlar
-
-| Buyruq | Vazifasi |
-|--------|----------|
-| `/start` | Botni boshlash va bosh menyu |
-| `/menu`  | Bosh menyuga qaytish |
-| `/help`  | Qisqa yo'riqnoma |
+---
 
 ## 🧩 Tuzilma
-
 ```
-bot.py            # Asosiy bot mantiqi (menyu, handlerlar, klaviaturalar)
-questions.py      # 📝 Test savollari bazasi (daraja bo'yicha)
-content.py        # 📖 Matn, ✍️ Yozish, 📚 Lug'at kontenti (daraja bo'yicha)
-requirements.txt  # Bog'liqliklar
-.env.example      # Token namunasi
-```
-
-## ➕ Kontent qo'shish
-
-**Test savoli** — `questions.py`:
-```python
-{"q": "Savol matni", "options": ["A", "B", "C", "D"], "answer": "To'g'ri variant"}
-```
-
-**Yangi so'z** — `content.py` → `VOCABULARY`:
-```python
-{"word": "apple", "uz": "olma", "example": "I eat an apple.", "example_uz": "Men olma yeyman."}
+bot.py            # ishga tushirish nuqtasi
+config.py         # sozlamalar, token, API kalit, konstantalar
+keyboards.py      # tugmalar
+helpers.py        # yordamchilar (safe_edit, baho, ...)
+database.py       # SQLite (XP, coin, streak, referral, vazifalar)
+questions.py      # test savollari
+content.py        # matn, yozish, lug'at
+certificate.py    # sertifikat (Pillow PNG)
+ai_tutor.py       # AI tutor + javob baholash (OpenAI)
+handlers/
+   menu, test, reading, writing, vocabulary,
+   certificate, ai, payment, admin, teacher, wordclash
 ```
 
-**Matn** — `content.py` → `READING`:
-```python
-{"title": "Sarlavha", "text": "English text...", "uz": "O'zbekcha tarjima..."}
-```
-
-**Yozish mashqi** — `content.py` → `WRITING`:
-```python
-{"uz": "O'zbekcha gap", "answers": ["accepted english", "variant 2"], "hint": "izoh"}
-```
-
-## ⚙️ Sozlamalar (`bot.py`)
-
-- `QUESTIONS_PER_TEST` — bitta testdagi savollar soni (standart: 10)
-- `WRITE_CLOSE_RATIO` — yozishda "deyarli to'g'ri" chegarasi (standart: 0.85)
-- `grade_for()` — baho mezonlari
+## ⚙️ Texnologiya
+Python · `python-telegram-bot` 22.x · `openai` · `Pillow` · SQLite
