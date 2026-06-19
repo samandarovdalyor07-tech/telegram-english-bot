@@ -40,6 +40,16 @@ VOCABULARY = {
         {"word": "beautiful", "uz": "chiroyli", "example": "The city is beautiful.", "example_uz": "Shahar chiroyli."},
         {"word": "neighbour", "uz": "qo'shni", "example": "My neighbour is kind.", "example_uz": "Mening qo'shnim mehribon."},
         {"word": "language", "uz": "til", "example": "English is a world language.", "example_uz": "Ingliz tili — jahon tili."},
+        {"word": "afraid", "uz": "qo'rqqan", "example": "I am afraid of the dark.", "example_uz": "Men qorong'idan qo'rqaman."},
+        {"word": "agree", "uz": "rozi bo'lmoq", "example": "I agree with you.", "example_uz": "Men siz bilan roziman."},
+        {"word": "arrive", "uz": "yetib kelmoq", "example": "The bus arrives at nine.", "example_uz": "Avtobus to'qqizda yetib keladi."},
+        {"word": "clever", "uz": "aqlli", "example": "He is a clever boy.", "example_uz": "U aqlli bola."},
+        {"word": "hide", "uz": "yashirinmoq", "example": "The cat hides under the bed.", "example_uz": "Mushuk karavot tagiga yashirinadi."},
+        {"word": "promise", "uz": "va'da bermoq", "example": "I promise to come early.", "example_uz": "Erta kelishga va'da beraman."},
+        {"word": "reply", "uz": "javob bermoq", "example": "Please reply soon.", "example_uz": "Iltimos, tezroq javob bering."},
+        {"word": "safe", "uz": "xavfsiz", "example": "We are safe at home.", "example_uz": "Biz uyda xavfsizmiz."},
+        {"word": "secret", "uz": "sir", "example": "I can keep a secret.", "example_uz": "Men sir saqlay olaman."},
+        {"word": "terrible", "uz": "dahshatli", "example": "The food was terrible.", "example_uz": "Ovqat dahshatli edi."},
     ],
     "intermediate": [
         {"word": "experience", "uz": "tajriba", "example": "She has work experience.", "example_uz": "Uning ish tajribasi bor."},
@@ -52,6 +62,12 @@ VOCABULARY = {
         {"word": "suggest", "uz": "taklif qilmoq", "example": "I suggest a short break.", "example_uz": "Men qisqa tanaffusni taklif qilaman."},
         {"word": "although", "uz": "garchi / ... bo'lsa-da", "example": "Although it was late, he worked.", "example_uz": "Kech bo'lsa-da, u ishladi."},
         {"word": "however", "uz": "biroq / lekin", "example": "It is hard; however, it is possible.", "example_uz": "Bu qiyin; biroq, bu mumkin."},
+        {"word": "describe", "uz": "tasvirlab bermoq", "example": "Can you describe the man?", "example_uz": "U odamni tasvirlab bera olasizmi?"},
+        {"word": "avoid", "uz": "qochmoq / oldini olmoq", "example": "Try to avoid mistakes.", "example_uz": "Xatolardan qochishga harakat qiling."},
+        {"word": "behave", "uz": "o'zini tutmoq", "example": "The children behave well.", "example_uz": "Bolalar o'zini yaxshi tutadi."},
+        {"word": "suppose", "uz": "taxmin qilmoq", "example": "I suppose you are right.", "example_uz": "Menimcha, siz haqsiz."},
+        {"word": "prevent", "uz": "oldini olmoq", "example": "We must prevent fires.", "example_uz": "Biz yong'inlarning oldini olishimiz kerak."},
+        {"word": "discover", "uz": "kashf qilmoq", "example": "Scientists discover new things.", "example_uz": "Olimlar yangi narsalar kashf qiladi."},
     ],
     "upper": [
         {"word": "achievement", "uz": "yutuq", "example": "This is a great achievement.", "example_uz": "Bu katta yutuq."},
@@ -109,6 +125,19 @@ READING = {
         },
     ],
     "elementary": [
+        {
+            "title": "Helping a Neighbour",
+            "text": "Aziz lives in a small town. One morning, he saw his old "
+                    "neighbour carrying heavy bags. He ran to help her and carried "
+                    "the bags to her house. The woman was very happy. She gave Aziz "
+                    "an apple and said thank you. Aziz felt proud. Helping people "
+                    "made him glad.",
+            "uz": "Aziz kichik shaharchada yashaydi. Bir kuni ertalab u keksa "
+                  "qo'shnisini og'ir sumkalar ko'tarib ketayotganini ko'rdi. U unga "
+                  "yordamga yugurdi va sumkalarni uyiga ko'tarib bordi. Ayol juda "
+                  "xursand bo'ldi. U Azizga olma berdi va rahmat aytdi. Aziz o'zini "
+                  "g'ururli his qildi. Odamlarga yordam berish uni xursand qildi.",
+        },
         {
             "title": "A Busy Morning",
             "text": "Every morning Tom wakes up at six o'clock. He takes a shower and has "
