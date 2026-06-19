@@ -72,6 +72,14 @@ from handlers.admin import (
     removeteacher_command,
     block_banned,
 )
+from handlers.wordclash import (
+    wordclash_command,
+    group_command,
+    on_join,
+    on_start,
+    on_pick,
+    on_answer,
+)
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -113,6 +121,8 @@ def build_application(token: str) -> Application:
     app.add_handler(CommandHandler("ai", ai_start))
     app.add_handler(CommandHandler("buy", buy_command))
     app.add_handler(CommandHandler("teacher", teacher_command))
+    app.add_handler(CommandHandler("wordclash", wordclash_command))
+    app.add_handler(CommandHandler("group", group_command))
 
     # 🛡 Admin
     app.add_handler(CommandHandler("myid", myid_command))
@@ -150,6 +160,12 @@ def build_application(token: str) -> Application:
     app.add_handler(CallbackQueryHandler(on_buy_teacher, pattern=r"^buyteacher$"))
     app.add_handler(PreCheckoutQueryHandler(on_pre_checkout))
     app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, on_successful_payment))
+
+    # ⚔️ Word Clash (guruh o'yini)
+    app.add_handler(CallbackQueryHandler(on_join, pattern=r"^wc:join$"))
+    app.add_handler(CallbackQueryHandler(on_start, pattern=r"^wc:start$"))
+    app.add_handler(CallbackQueryHandler(on_pick, pattern=r"^wc:pick:"))
+    app.add_handler(CallbackQueryHandler(on_answer, pattern=r"^wc:ans:"))
 
     # Matnli xabarlar (oxirida — menyu tugmalari, AI, yozish)
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, on_text))
