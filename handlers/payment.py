@@ -5,7 +5,7 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, LabeledPrice, U
 from telegram.ext import ContextTypes
 
 import database as db
-from config import COIN_PACKAGES
+from config import COIN_PACKAGES, TEACHER_STARS
 
 
 async def buy_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -46,25 +46,74 @@ async def on_buy(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
+async def teacher_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """🎓 O'qituvchi bo'lish — ma'lumot va Stars bilan sotib olish tugmasi."""
+    user = update.effective_user
+    db.ensure_user(user.id, user.first_name)
+    if db.is_teacher(user.id):
+        await update.message.reply_text("🎓 Siz allaqachon o'qituvchisiz! ✅")
+        return
+    kb = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton(f"🎓 O'qituvchi bo'lish — {TEACHER_STARS} ⭐",
+                                  callback_data="buyteacher")],
+            [InlineKeyboardButton("🏠 Bosh menyu", callback_data="menu")],
+        ]
+    )
+    await update.message.reply_text(
+        "🎓 <b>O'qituvchi bo'lish</b>\n\n"
+        "O'qituvchi o'z guruhiga botni qo'shib, o'quvchilarga vazifa beradi va "
+        "ularning bajarganini kuzatadi.\n\n"
+        f"💎 Narxi: <b>{TEACHER_STARS} ⭐</b> (Telegram Stars).\n"
+        "Yoki adminga yozing — u bepul ham berishi mumkin.",
+        parse_mode="HTML",
+        reply_markup=kb,
+    )
+
+
+async def on_buy_teacher(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """O'qituvchilik uchun Stars hisob-fakturasini yuboradi."""
+    query = update.callback_query
+    await query.answer()
+    await context.bot.send_invoice(
+        chat_id=query.message.chat_id,
+        title="O'qituvchilik",
+        description="English Learning Bot — o'qituvchi roli",
+        payload="teacher",
+        currency="XTR",
+        prices=[LabeledPrice("O'qituvchilik", TEACHER_STARS)],
+    )
+
+
 async def on_pre_checkout(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """To'lovdan oldingi tekshiruv — tasdiqlaymiz."""
     await update.pre_checkout_query.answer(ok=True)
 
 
 async def on_successful_payment(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    """To'lov muvaffaqiyatli — coinlarni hisobga qo'shamiz."""
+    """To'lov muvaffaqiyatli — coin yoki o'qituvchilik beriladi."""
     payment = update.message.successful_payment
     payload = payment.invoice_payload
-    if not payload.startswith("coins:"):
-        return
-    coins = int(payload.split(":", 1)[1])
     user = update.effective_user
     db.ensure_user(user.id, user.first_name)
-    db.add_coins(user.id, coins)
-    total = db.get_user(user.id)["coins"]
-    await update.message.reply_text(
-        f"✅ <b>To'lov qabul qilindi!</b>\n"
-        f"+{coins} 🪙 qo'shildi. Jami: <b>{total}</b> 🪙\n\n"
-        f"Rahmat! 🎉",
-        parse_mode="HTML",
-    )
+
+    if payload == "teacher":
+        db.set_teacher(user.id, True)
+        await update.message.reply_text(
+            "🎓 <b>Tabriklaymiz! Endi siz o'qituvchisiz!</b>\n\n"
+            "Tez orada o'z guruhingizga botni qo'shib, o'quvchilarga vazifa "
+            "bera olasiz.\nRahmat! 🎉",
+            parse_mode="HTML",
+        )
+        return
+
+    if payload.startswith("coins:"):
+        coins = int(payload.split(":", 1)[1])
+        db.add_coins(user.id, coins)
+        total = db.get_user(user.id)["coins"]
+        await update.message.reply_text(
+            f"✅ <b>To'lov qabul qilindi!</b>\n"
+            f"+{coins} 🪙 qo'shildi. Jami: <b>{total}</b> 🪙\n\n"
+            f"Rahmat! 🎉",
+            parse_mode="HTML",
+        )

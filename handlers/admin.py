@@ -98,6 +98,37 @@ async def unban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(f"✅ {uid} blokdan chiqarildi.")
 
 
+async def maketeacher_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Admin: foydalanuvchiga bepul o'qituvchilik beradi."""
+    if not is_admin(update.effective_user.id):
+        return
+    if not context.args or not context.args[0].isdigit():
+        await update.message.reply_text("Foydalanish: <code>/maketeacher user_id</code>", parse_mode="HTML")
+        return
+    uid = int(context.args[0])
+    if not db.get_user(uid):
+        await update.message.reply_text("⚠️ Bunday foydalanuvchi topilmadi (avval botga /start bossin).")
+        return
+    db.set_teacher(uid, True)
+    await update.message.reply_text(f"🎓 {uid} ga o'qituvchilik berildi.")
+    try:
+        await context.bot.send_message(uid, "🎓 Sizga o'qituvchilik berildi! Tabriklaymiz.")
+    except Exception:
+        pass
+
+
+async def removeteacher_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Admin: o'qituvchilikni olib qo'yadi."""
+    if not is_admin(update.effective_user.id):
+        return
+    if not context.args or not context.args[0].isdigit():
+        await update.message.reply_text("Foydalanish: <code>/removeteacher user_id</code>", parse_mode="HTML")
+        return
+    uid = int(context.args[0])
+    db.set_teacher(uid, False)
+    await update.message.reply_text(f"✅ {uid} dan o'qituvchilik olindi.")
+
+
 async def block_banned(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Bloklangan foydalanuvchilarning barcha so'rovlarini to'xtatadi (group=-1)."""
     user = update.effective_user

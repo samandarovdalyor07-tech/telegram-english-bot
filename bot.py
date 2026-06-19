@@ -53,7 +53,14 @@ from handlers.vocabulary import on_vocab_meaning, on_vocab_next
 from handlers.writing import on_writing_hint, on_writing_skip
 from handlers.certificate import certificate_command
 from handlers.ai import ai_start
-from handlers.payment import buy_command, on_buy, on_pre_checkout, on_successful_payment
+from handlers.payment import (
+    buy_command,
+    on_buy,
+    on_pre_checkout,
+    on_successful_payment,
+    teacher_command,
+    on_buy_teacher,
+)
 from handlers.admin import (
     myid_command,
     stats_command,
@@ -61,6 +68,8 @@ from handlers.admin import (
     give_command,
     ban_command,
     unban_command,
+    maketeacher_command,
+    removeteacher_command,
     block_banned,
 )
 
@@ -103,6 +112,7 @@ def build_application(token: str) -> Application:
     app.add_handler(CommandHandler("certificate", certificate_command))
     app.add_handler(CommandHandler("ai", ai_start))
     app.add_handler(CommandHandler("buy", buy_command))
+    app.add_handler(CommandHandler("teacher", teacher_command))
 
     # 🛡 Admin
     app.add_handler(CommandHandler("myid", myid_command))
@@ -111,6 +121,8 @@ def build_application(token: str) -> Application:
     app.add_handler(CommandHandler("give", give_command))
     app.add_handler(CommandHandler("ban", ban_command))
     app.add_handler(CommandHandler("unban", unban_command))
+    app.add_handler(CommandHandler("maketeacher", maketeacher_command))
+    app.add_handler(CommandHandler("removeteacher", removeteacher_command))
 
     # Menyu / navigatsiya
     app.add_handler(CallbackQueryHandler(on_menu, pattern=r"^menu$"))
@@ -135,6 +147,7 @@ def build_application(token: str) -> Application:
 
     # 💎 To'lov (Telegram Stars)
     app.add_handler(CallbackQueryHandler(on_buy, pattern=r"^buy:"))
+    app.add_handler(CallbackQueryHandler(on_buy_teacher, pattern=r"^buyteacher$"))
     app.add_handler(PreCheckoutQueryHandler(on_pre_checkout))
     app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, on_successful_payment))
 

@@ -54,6 +54,7 @@ def init_db():
     _add_column(conn, "users", "cert_level", "TEXT")
     _add_column(conn, "users", "cert_percent", "INTEGER NOT NULL DEFAULT 0")
     _add_column(conn, "users", "banned", "INTEGER NOT NULL DEFAULT 0")
+    _add_column(conn, "users", "teacher", "INTEGER NOT NULL DEFAULT 0")
     conn.commit()
 
 
@@ -249,3 +250,19 @@ def is_banned(user_id: int) -> bool:
     conn = _connect()
     row = conn.execute("SELECT banned FROM users WHERE user_id = ?", (user_id,)).fetchone()
     return bool(row and row["banned"])
+
+
+# --------------------------------------------------------------------------- #
+# O'qituvchi roli
+# --------------------------------------------------------------------------- #
+
+def set_teacher(user_id: int, value: bool):
+    conn = _connect()
+    conn.execute("UPDATE users SET teacher = ? WHERE user_id = ?", (1 if value else 0, user_id))
+    conn.commit()
+
+
+def is_teacher(user_id: int) -> bool:
+    conn = _connect()
+    row = conn.execute("SELECT teacher FROM users WHERE user_id = ?", (user_id,)).fetchone()
+    return bool(row and row["teacher"])

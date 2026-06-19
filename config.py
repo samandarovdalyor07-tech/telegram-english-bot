@@ -67,6 +67,9 @@ COIN_PACKAGES = [
     {"coins": 1000, "stars": 100},
 ]
 
+# 🎓 O'qituvchilik narxi (Stars) — xohlagancha o'zgartiring
+TEACHER_STARS = 250
+
 # ── Bo'limlar (faoliyat turlari) ────────────────────────────────────────────
 ACTIVITIES = {
     "test": "📝 Test",
