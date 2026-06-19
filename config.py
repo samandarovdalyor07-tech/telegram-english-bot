@@ -33,6 +33,15 @@ def _env(key: str, default: str = "") -> str:
 BOT_TOKEN = _env("BOT_TOKEN")        # @BotFather bergan token
 AI_API_KEY = _env("AI_API_KEY")      # AI tutor uchun (keyinroq ishlatiladi)
 
+# Adminlar — .env da vergul bilan: ADMIN_IDS=123456,789012
+ADMIN_IDS = [
+    int(x) for x in _env("ADMIN_IDS").replace(" ", "").split(",") if x.isdigit()
+]
+
+
+def is_admin(user_id: int) -> bool:
+    return user_id in ADMIN_IDS
+
 # ── O'yin sozlamalari ───────────────────────────────────────────────────────
 QUESTIONS_PER_TEST = 10              # bitta testdagi savollar soni
 WRITE_CLOSE_RATIO = 0.85            # yozishda "deyarli to'g'ri" chegarasi (0..1)

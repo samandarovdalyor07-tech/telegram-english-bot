@@ -53,6 +53,7 @@ def init_db():
     # Migratsiya: yangi ustunlarni qo'shamiz (eski bazalar uchun)
     _add_column(conn, "users", "cert_level", "TEXT")
     _add_column(conn, "users", "cert_percent", "INTEGER NOT NULL DEFAULT 0")
+    _add_column(conn, "users", "banned", "INTEGER NOT NULL DEFAULT 0")
     conn.commit()
 
 
@@ -210,3 +211,41 @@ def get_rank(user_id: int) -> int:
 def total_users() -> int:
     conn = _connect()
     return conn.execute("SELECT COUNT(*) AS c FROM users").fetchone()["c"]
+
+
+# --------------------------------------------------------------------------- #
+# Admin
+# --------------------------------------------------------------------------- #
+
+def all_user_ids():
+    """Broadcast uchun barcha (bloklanmagan) foydalanuvchi ID lari."""
+    conn = _connect()
+    rows = conn.execute(
+        "SELECT user_id FROM users WHERE banned = 0 OR banned IS NULL"
+    ).fetchall()
+    return [r["user_id"] for r in rows]
+
+
+def get_stats() -> dict:
+    """Umumiy statistika."""
+    conn = _connect()
+    today = date.today().isoformat()
+    total = conn.execute("SELECT COUNT(*) AS c FROM users").fetchone()["c"]
+    active = conn.execute(
+        "SELECT COUNT(*) AS c FROM users WHERE last_active = ?", (today,)
+    ).fetchone()["c"]
+    coins = conn.execute("SELECT COALESCE(SUM(coins), 0) AS s FROM users").fetchone()["s"]
+    xp = conn.execute("SELECT COALESCE(SUM(xp), 0) AS s FROM users").fetchone()["s"]
+    return {"total": total, "active_today": active, "coins": coins, "xp": xp}
+
+
+def set_banned(user_id: int, value: bool):
+    conn = _connect()
+    conn.execute("UPDATE users SET banned = ? WHERE user_id = ?", (1 if value else 0, user_id))
+    conn.commit()
+
+
+def is_banned(user_id: int) -> bool:
+    conn = _connect()
+    row = conn.execute("SELECT banned FROM users WHERE user_id = ?", (user_id,)).fetchone()
+    return bool(row and row["banned"])
