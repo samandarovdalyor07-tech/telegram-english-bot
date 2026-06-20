@@ -78,7 +78,7 @@ from handlers.wordclash import (
     on_join,
     on_start,
     on_pick,
-    on_answer,
+    on_answer as on_wc_answer,
 )
 from handlers.teacher import assign_command, report_command, on_submission
 
@@ -170,7 +170,7 @@ def build_application(token: str) -> Application:
     app.add_handler(CallbackQueryHandler(on_join, pattern=r"^wc:join$"))
     app.add_handler(CallbackQueryHandler(on_start, pattern=r"^wc:start$"))
     app.add_handler(CallbackQueryHandler(on_pick, pattern=r"^wc:pick:"))
-    app.add_handler(CallbackQueryHandler(on_answer, pattern=r"^wc:ans:"))
+    app.add_handler(CallbackQueryHandler(on_wc_answer, pattern=r"^wc:ans:"))
 
     # 👨‍🏫 Guruhda vazifaga reply qilingan javoblar
     app.add_handler(MessageHandler(filters.ChatType.GROUPS & filters.REPLY, on_submission))
