@@ -84,6 +84,45 @@ def init_db():
         )
         """
     )
+
+    # 📖 Guruhda ovozli o'qish + o'zaro (peer) baholash
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS reading_sessions (
+            id          INTEGER PRIMARY KEY AUTOINCREMENT,
+            group_id    INTEGER,
+            teacher_id  INTEGER,
+            story_title TEXT,
+            message_id  INTEGER,
+            phase       TEXT NOT NULL DEFAULT 'reading',
+            active      INTEGER NOT NULL DEFAULT 1,
+            created     TEXT
+        )
+        """
+    )
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS readers (
+            id            INTEGER PRIMARY KEY AUTOINCREMENT,
+            session_id    INTEGER,
+            student_id    INTEGER,
+            student_name  TEXT,
+            teacher_stars INTEGER,
+            UNIQUE(session_id, student_id)
+        )
+        """
+    )
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS peer_grades (
+            id        INTEGER PRIMARY KEY AUTOINCREMENT,
+            reader_id INTEGER,
+            grader_id INTEGER,
+            stars     INTEGER,
+            UNIQUE(reader_id, grader_id)
+        )
+        """
+    )
     conn.commit()
 
 
@@ -341,3 +380,105 @@ def get_submissions(assignment_id: int):
         "WHERE assignment_id = ? ORDER BY (score IS NULL), score DESC",
         (assignment_id,),
     ).fetchall()
+
+
+# --------------------------------------------------------------------------- #
+# 📖 Guruhda ovozli o'qish + o'zaro (peer) baholash
+# --------------------------------------------------------------------------- #
+
+def create_reading_session(group_id: int, teacher_id: int, story_title: str,
+                           message_id: int) -> int:
+    """Guruh uchun yangi o'qish sessiyasini ochadi (eskisini yopadi)."""
+    conn = _connect()
+    conn.execute(
+        "UPDATE reading_sessions SET active = 0 WHERE group_id = ? AND active = 1",
+        (group_id,),
+    )
+    cur = conn.execute(
+        "INSERT INTO reading_sessions "
+        "(group_id, teacher_id, story_title, message_id, phase, active, created) "
+        "VALUES (?, ?, ?, ?, 'reading', 1, ?)",
+        (group_id, teacher_id, story_title, message_id, date.today().isoformat()),
+    )
+    conn.commit()
+    return cur.lastrowid
+
+
+def get_active_session(group_id: int):
+    conn = _connect()
+    return conn.execute(
+        "SELECT * FROM reading_sessions WHERE group_id = ? AND active = 1 "
+        "ORDER BY id DESC LIMIT 1",
+        (group_id,),
+    ).fetchone()
+
+
+def set_session_phase(session_id: int, phase: str):
+    conn = _connect()
+    conn.execute("UPDATE reading_sessions SET phase = ? WHERE id = ?", (phase, session_id))
+    conn.commit()
+
+
+def end_session(session_id: int):
+    conn = _connect()
+    conn.execute(
+        "UPDATE reading_sessions SET active = 0, phase = 'done' WHERE id = ?",
+        (session_id,),
+    )
+    conn.commit()
+
+
+def add_reader(session_id: int, student_id: int, name: str) -> int:
+    """O'quvchini sessiyaga 'o'qigan' deb qo'shadi. reader.id qaytaradi."""
+    conn = _connect()
+    conn.execute(
+        "INSERT OR IGNORE INTO readers (session_id, student_id, student_name) "
+        "VALUES (?, ?, ?)",
+        (session_id, student_id, name),
+    )
+    conn.commit()
+    row = conn.execute(
+        "SELECT id FROM readers WHERE session_id = ? AND student_id = ?",
+        (session_id, student_id),
+    ).fetchone()
+    return row["id"]
+
+
+def get_readers(session_id: int):
+    conn = _connect()
+    return conn.execute(
+        "SELECT * FROM readers WHERE session_id = ? ORDER BY id",
+        (session_id,),
+    ).fetchall()
+
+
+def get_reader(reader_id: int):
+    conn = _connect()
+    return conn.execute("SELECT * FROM readers WHERE id = ?", (reader_id,)).fetchone()
+
+
+def add_peer_grade(reader_id: int, grader_id: int, stars: int):
+    """O'quvchining boshqa o'quvchiga qo'ygan bahosi (qayta bossa, yangilanadi)."""
+    conn = _connect()
+    conn.execute(
+        "INSERT OR REPLACE INTO peer_grades (reader_id, grader_id, stars) "
+        "VALUES (?, ?, ?)",
+        (reader_id, grader_id, stars),
+    )
+    conn.commit()
+
+
+def peer_summary(reader_id: int):
+    """(o'rtacha yulduz, baho bergan­lar soni) ni qaytaradi."""
+    conn = _connect()
+    row = conn.execute(
+        "SELECT AVG(stars) AS avg, COUNT(*) AS cnt FROM peer_grades WHERE reader_id = ?",
+        (reader_id,),
+    ).fetchone()
+    return (row["avg"], row["cnt"]) if row and row["cnt"] else (None, 0)
+
+
+def set_teacher_stars(reader_id: int, stars: int):
+    conn = _connect()
+    conn.execute("UPDATE readers SET teacher_stars = ? WHERE id = ?", (stars, reader_id))
+    conn.commit()

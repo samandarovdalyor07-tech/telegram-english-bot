@@ -62,6 +62,8 @@ from handlers.payment import (
     on_buy_teacher,
 )
 from handlers.admin import (
+    users_command,
+    developer_command,
     myid_command,
     stats_command,
     broadcast_command,
@@ -78,9 +80,14 @@ from handlers.wordclash import (
     on_join,
     on_start,
     on_pick,
-    on_answer,
+    on_answer as on_wc_answer,
 )
 from handlers.teacher import assign_command, report_command, on_submission
+from handlers.reading_group import (
+    read_command,
+    on_reading_cb,
+    on_voice_reading,
+)
 
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -100,6 +107,8 @@ async def post_init(application: Application) -> None:
             BotCommand("certificate", "📜 Sertifikat olish"),
             BotCommand("ai", "🤖 AI Tutor bilan suhbat"),
             BotCommand("buy", "💎 Coin sotib olish"),
+            BotCommand("users", "👥 Foydalanuvchilar soni"),
+            BotCommand("developer", "👨‍💻 Bot dasturchisi"),
             BotCommand("help", "ℹ️ Yordam"),
         ]
     )
@@ -128,6 +137,11 @@ def build_application(token: str) -> Application:
     # 👨‍🏫 O'qituvchi (guruh nazorati)
     app.add_handler(CommandHandler("assign", assign_command))
     app.add_handler(CommandHandler("report", report_command))
+    app.add_handler(CommandHandler("read", read_command))
+
+    # ℹ️ Community talablari: foydalanuvchilar soni va dasturchi
+    app.add_handler(CommandHandler("users", users_command))
+    app.add_handler(CommandHandler("developer", developer_command))
 
     # 🛡 Admin
     app.add_handler(CommandHandler("myid", myid_command))
@@ -170,7 +184,15 @@ def build_application(token: str) -> Application:
     app.add_handler(CallbackQueryHandler(on_join, pattern=r"^wc:join$"))
     app.add_handler(CallbackQueryHandler(on_start, pattern=r"^wc:start$"))
     app.add_handler(CallbackQueryHandler(on_pick, pattern=r"^wc:pick:"))
-    app.add_handler(CallbackQueryHandler(on_answer, pattern=r"^wc:ans:"))
+    app.add_handler(CallbackQueryHandler(on_wc_answer, pattern=r"^wc:ans:"))
+
+    # 📖🎤 Guruhda ovozli o'qish + o'zaro baholash
+    app.add_handler(CallbackQueryHandler(on_reading_cb, pattern=r"^rs:"))
+    # Ovozli reply (o'qish) — vazifa (text reply) handleridan OLDIN turishi shart
+    app.add_handler(MessageHandler(
+        filters.ChatType.GROUPS & filters.REPLY & (filters.VOICE | filters.VIDEO_NOTE),
+        on_voice_reading,
+    ))
 
     # 👨‍🏫 Guruhda vazifaga reply qilingan javoblar
     app.add_handler(MessageHandler(filters.ChatType.GROUPS & filters.REPLY, on_submission))

@@ -8,9 +8,42 @@ from telegram import Update
 from telegram.ext import ApplicationHandlerStop, ContextTypes
 
 import database as db
-from config import is_admin
+from config import (
+    is_admin,
+    DEVELOPER_NAME,
+    DEVELOPER_USERNAME,
+    DEVELOPER_CONTACT,
+    DEVELOPER_ABOUT,
+)
 
 logger = logging.getLogger(__name__)
+
+
+async def users_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Har kim: bot foydalanuvchilarining joriy sonini ko'rsatadi."""
+    total = db.total_users()
+    s = db.get_stats()
+    await update.message.reply_text(
+        "👥 <b>Bot foydalanuvchilari</b>\n\n"
+        f"📊 Jami foydalanuvchilar: <b>{total}</b>\n"
+        f"🔥 Bugun faol: <b>{s['active_today']}</b>",
+        parse_mode="HTML",
+    )
+
+
+async def developer_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    """Har kim: bot dasturchisi haqida ma'lumot."""
+    lines = [
+        "👨‍💻 <b>Bot dasturchisi</b>\n",
+        f"📝 Ishlanma: {DEVELOPER_ABOUT}",
+        f"🧑 Dasturchi: <b>{DEVELOPER_NAME}</b>",
+    ]
+    if DEVELOPER_USERNAME:
+        uname = DEVELOPER_USERNAME.lstrip("@")
+        lines.append(f"💬 Telegram: @{uname}")
+    if DEVELOPER_CONTACT:
+        lines.append(f"📧 Aloqa: {DEVELOPER_CONTACT}")
+    await update.message.reply_text("\n".join(lines), parse_mode="HTML")
 
 
 async def myid_command(update: Update, context: ContextTypes.DEFAULT_TYPE):

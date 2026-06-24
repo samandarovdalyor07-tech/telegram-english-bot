@@ -31,24 +31,27 @@ async def send_question(query, context):
     )
     await safe_edit(
         query, text, parse_mode="HTML",
-        reply_markup=options_keyboard(question["options"]),
+        reply_markup=options_keyboard(question["options"], question["correct"]),
     )
 
 
 async def on_answer(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     data = context.user_data
-    if "test" not in data:
+    if "test" not in data or data.get("idx", 0) >= len(data.get("test", [])):
         await query.answer()
         await safe_edit(query, "⏳ Sessiya tugagan. /start bosing.", reply_markup=home_keyboard())
         return
+    # To'g'ri/noto'g'ri tugmaning o'zidan o'qiladi (ans:<1|0>:<indeks>),
+    # shuning uchun ekrandagi tugma bilan baho doim mos keladi.
+    parts = query.data.split(":")
+    is_correct = len(parts) > 1 and parts[1] == "1"
     question = data["test"][data["idx"]]
-    chosen = int(query.data.split(":", 1)[1])
-    correct = question["correct"]
-    if chosen == correct:
+    if is_correct:
         data["score"] += 1
         await query.answer("✅ To'g'ri!")
     else:
+        correct = question["correct"]
         await query.answer(
             f"❌ Noto'g'ri. To'g'ri javob: {question['options'][correct]}", show_alert=True
         )

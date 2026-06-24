@@ -42,11 +42,18 @@ def levels_keyboard(activity: str) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(buttons)
 
 
-def options_keyboard(options) -> InlineKeyboardMarkup:
-    """Test savoli variantlari (A, B, C, D)."""
+def options_keyboard(options, correct) -> InlineKeyboardMarkup:
+    """Test savoli variantlari (A, B, C, D).
+
+    Javobning to'g'riligi tugmaning o'ziga (callback_data) yoziladi:
+    `ans:<1 yoki 0>:<indeks>`. Shu tufayli baholash user_data holatiga
+    bog'liq emas — ekrandagi tugma nima bo'lsa, javob ham shunga mos."""
     labels = ["A", "B", "C", "D", "E", "F"]
     buttons = [
-        [InlineKeyboardButton(f"{labels[i]}) {opt}", callback_data=f"ans:{i}")]
+        [InlineKeyboardButton(
+            f"{labels[i]}) {opt}",
+            callback_data=f"ans:{1 if i == correct else 0}:{i}",
+        )]
         for i, opt in enumerate(options)
     ]
     return InlineKeyboardMarkup(buttons)
