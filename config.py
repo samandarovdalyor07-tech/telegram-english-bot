@@ -44,8 +44,8 @@ def is_admin(user_id: int) -> bool:
 
 # 👨‍💻 Bot dasturchisi — /developer buyrug'i shu ma'lumotni ko'rsatadi.
 # .env orqali o'zgartirish mumkin: DEVELOPER_NAME=..., DEVELOPER_USERNAME=..., DEVELOPER_CONTACT=...
-DEVELOPER_NAME = _env("DEVELOPER_NAME", "Dalyor Samandarov")
-DEVELOPER_USERNAME = _env("DEVELOPER_USERNAME", "")            # @ belgisisiz, masalan: dalyor_dev
+DEVELOPER_NAME = _env("DEVELOPER_NAME", "Samandarov Dalyor")
+DEVELOPER_USERNAME = _env("DEVELOPER_USERNAME", "smndrv_07")   # @ belgisisiz
 DEVELOPER_CONTACT = _env("DEVELOPER_CONTACT", "samandarovdalyor07@gmail.com")
 DEVELOPER_ABOUT = _env("DEVELOPER_ABOUT", "Ingliz tili o'rgatuvchi Telegram bot")
 
