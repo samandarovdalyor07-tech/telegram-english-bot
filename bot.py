@@ -62,6 +62,8 @@ from handlers.payment import (
     on_buy_teacher,
 )
 from handlers.admin import (
+    users_command,
+    developer_command,
     myid_command,
     stats_command,
     broadcast_command,
@@ -105,6 +107,8 @@ async def post_init(application: Application) -> None:
             BotCommand("certificate", "📜 Sertifikat olish"),
             BotCommand("ai", "🤖 AI Tutor bilan suhbat"),
             BotCommand("buy", "💎 Coin sotib olish"),
+            BotCommand("users", "👥 Foydalanuvchilar soni"),
+            BotCommand("developer", "👨‍💻 Bot dasturchisi"),
             BotCommand("help", "ℹ️ Yordam"),
         ]
     )
@@ -134,6 +138,10 @@ def build_application(token: str) -> Application:
     app.add_handler(CommandHandler("assign", assign_command))
     app.add_handler(CommandHandler("report", report_command))
     app.add_handler(CommandHandler("read", read_command))
+
+    # ℹ️ Community talablari: foydalanuvchilar soni va dasturchi
+    app.add_handler(CommandHandler("users", users_command))
+    app.add_handler(CommandHandler("developer", developer_command))
 
     # 🛡 Admin
     app.add_handler(CommandHandler("myid", myid_command))

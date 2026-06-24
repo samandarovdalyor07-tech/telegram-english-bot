@@ -42,6 +42,13 @@ ADMIN_IDS = [
 def is_admin(user_id: int) -> bool:
     return user_id in ADMIN_IDS
 
+# 👨‍💻 Bot dasturchisi — /developer buyrug'i shu ma'lumotni ko'rsatadi.
+# .env orqali o'zgartirish mumkin: DEVELOPER_NAME=..., DEVELOPER_USERNAME=..., DEVELOPER_CONTACT=...
+DEVELOPER_NAME = _env("DEVELOPER_NAME", "Dalyor Samandarov")
+DEVELOPER_USERNAME = _env("DEVELOPER_USERNAME", "")            # @ belgisisiz, masalan: dalyor_dev
+DEVELOPER_CONTACT = _env("DEVELOPER_CONTACT", "samandarovdalyor07@gmail.com")
+DEVELOPER_ABOUT = _env("DEVELOPER_ABOUT", "Ingliz tili o'rgatuvchi Telegram bot")
+
 # ── O'yin sozlamalari ───────────────────────────────────────────────────────
 QUESTIONS_PER_TEST = 10              # bitta testdagi savollar soni
 WRITE_CLOSE_RATIO = 0.85            # yozishda "deyarli to'g'ri" chegarasi (0..1)
